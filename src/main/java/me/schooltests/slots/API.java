@@ -83,7 +83,7 @@ public class API {
     }
 
     public String getPrefix() {
-        return ChatColor.translateAlternateColorCodes('&', config.getString("prefix")) + " " + ChatColor.WHITE;
+        return ChatColor.translateAlternateColorCodes('&', getConfig().getString("prefix")) + " " + ChatColor.WHITE;
     }
 
     public YamlConfiguration getConfig() {
@@ -161,7 +161,7 @@ public class API {
 
         final List<ItemStack> items = Arrays.asList(item1, item2, item3, item4, item5, item6, item7);
         player.openInventory(inv);
-        final Player xPlayer = player;
+        final Player finalPlayer = player;
         List<Integer> delays = new ArrayList<Integer>();
         int insert = 0;
         for(int i = 0; i < getConfig().getInt("frames"); i++) {
@@ -172,9 +172,9 @@ public class API {
         counter.setD(delays);
         final BukkitTask task = new BukkitRunnable() {
             public void run() {
-                if(!xPlayer.getOpenInventory().getTopInventory().getName().equals(ChatColor.translateAlternateColorCodes('&', getConfig().getString("gui_name")))) return;
+                if(!finalPlayer.getOpenInventory().getTopInventory().getName().equals(ChatColor.translateAlternateColorCodes('&', getConfig().getString("gui_name")))) return;
                 if(counter.getD().contains(counter.get())) {
-                    Inventory inv = xPlayer.getOpenInventory().getTopInventory();
+                    Inventory inv = finalPlayer.getOpenInventory().getTopInventory();
                     for (int i = 0; i < 27; i++) {
                         inv.setItem(i, panels.get(random.nextInt(panels.size())));
                     }
@@ -182,7 +182,7 @@ public class API {
                     inv.setItem(11, items.get(random.nextInt(items.size())));
                     inv.setItem(13, items.get(random.nextInt(items.size())));
                     inv.setItem(15, items.get(random.nextInt(items.size())));
-                    xPlayer.playSound(xPlayer.getLocation(), Sound.NOTE_PLING, 25F, 1F);
+                    finalPlayer.playSound(finalPlayer.getLocation(), Sound.NOTE_PLING, 25F, 1F);
                 }
                 counter.increment();
             }
@@ -192,38 +192,38 @@ public class API {
         new BukkitRunnable() {
             public void run() {
                 task.cancel();
-                removeFromSlots(xPlayer);
+                removeFromSlots(finalPlayer);
                 if (xChance == 1) {
-                    if (xPlayer.getOpenInventory().getTopInventory().getTitle().equals(ChatColor.translateAlternateColorCodes('&', getConfig().getString("gui_name")))) {
+                    if (finalPlayer.getOpenInventory().getTopInventory().getTitle().equals(ChatColor.translateAlternateColorCodes('&', getConfig().getString("gui_name")))) {
                         ItemStack recurrent = new ItemStack(Material.DIAMOND, 1);
                         ItemMeta recurr = recurrent.getItemMeta();
                         recurr.setDisplayName(ChatColor.GREEN + "$" + xWinnings);
                         recurrent.setItemMeta(recurr);
-                        xPlayer.closeInventory();
-                        Inventory inv2 = Bukkit.createInventory(null, 9, ChatColor.GREEN + "You win!");
+                        finalPlayer.closeInventory();
+                        Inventory inventoryResult = Bukkit.createInventory(null, 9, ChatColor.GREEN + "You win!");
                         for (int i = 0; i < 9; i++) {
-                            inv2.setItem(i, panels.get(random.nextInt(panels.size())));
+                            inventoryResult.setItem(i, panels.get(random.nextInt(panels.size())));
                         }
 
-                        inv2.setItem(4, recurrent);
-                        inv2.setItem(2, recurrent);
-                        inv2.setItem(6, recurrent);
-                        xPlayer.openInventory(inv2);
-                        xPlayer.playSound(xPlayer.getLocation(), Sound.ORB_PICKUP, 50F, 1F);
-                        getEcon().depositPlayer(xPlayer, xWinnings);
+                        inventoryResult.setItem(4, recurrent);
+                        inventoryResult.setItem(2, recurrent);
+                        inventoryResult.setItem(6, recurrent);
+                        finalPlayer.openInventory(inventoryResult);
+                        finalPlayer.playSound(finalPlayer.getLocation(), Sound.ORB_PICKUP, 50F, 1F);
+                        getEcon().depositPlayer(finalPlayer, xWinnings);
                     } else {
-                        xPlayer.closeInventory();
-                        xPlayer.sendMessage(getPrefix() + ChatColor.AQUA + "You won $" + ChatColor.WHITE + xWinnings + ChatColor.AQUA + ", Congratulations!");
+                        finalPlayer.closeInventory();
+                        finalPlayer.sendMessage(getPrefix() + ChatColor.AQUA + "You won $" + ChatColor.WHITE + xWinnings + ChatColor.AQUA + ", Congratulations!");
                     }
                 } else {
-                    if (xPlayer.getOpenInventory().getTopInventory().getTitle().equals(ChatColor.translateAlternateColorCodes('&', getConfig().getString("gui_name")))) {
-                        ItemStack one = xPlayer.getOpenInventory().getTopInventory().getItem(11);
-                        ItemStack two = xPlayer.getOpenInventory().getTopInventory().getItem(13);
-                        ItemStack three = xPlayer.getOpenInventory().getTopInventory().getItem(15);
-                        xPlayer.closeInventory();
-                        Inventory inv2 = Bukkit.createInventory(null, 9, ChatColor.RED + "You lose!");
+                    if (finalPlayer.getOpenInventory().getTopInventory().getTitle().equals(ChatColor.translateAlternateColorCodes('&', getConfig().getString("gui_name")))) {
+                        ItemStack one = finalPlayer.getOpenInventory().getTopInventory().getItem(11);
+                        ItemStack two = finalPlayer.getOpenInventory().getTopInventory().getItem(13);
+                        ItemStack three = finalPlayer.getOpenInventory().getTopInventory().getItem(15);
+                        finalPlayer.closeInventory();
+                        Inventory inventoryResult = Bukkit.createInventory(null, 9, ChatColor.RED + "You lose!");
                         for (int i = 0; i < 9; i++) {
-                            inv2.setItem(i, panels.get(random.nextInt(panels.size())));
+                            inventoryResult.setItem(i, panels.get(random.nextInt(panels.size())));
                         }
                         if (one == two && one == three) {
                             if (one.getType().equals(Material.DIAMOND)) {
@@ -233,14 +233,14 @@ public class API {
                             }
                         }
 
-                        inv2.setItem(4, two);
-                        inv2.setItem(2, one);
-                        inv2.setItem(6, three);
-                        xPlayer.openInventory(inv2);
-                        xPlayer.playSound(xPlayer.getLocation(), Sound.ORB_PICKUP, 50F, 1F);
+                        inventoryResult.setItem(4, two);
+                        inventoryResult.setItem(2, one);
+                        inventoryResult.setItem(6, three);
+                        finalPlayer.openInventory(inventoryResult);
+                        finalPlayer.playSound(finalPlayer.getLocation(), Sound.ORB_PICKUP, 50F, 1F);
                     } else {
-                        xPlayer.closeInventory();
-                        xPlayer.sendMessage(getPrefix() + ChatColor.AQUA + "You lose :(");
+                        finalPlayer.closeInventory();
+                        finalPlayer.sendMessage(getPrefix() + ChatColor.AQUA + "You lose :(");
                     }
                 }
             }
