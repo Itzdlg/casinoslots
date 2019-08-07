@@ -1,8 +1,0 @@
-main: me.schooltests.slots.Slots
-name: CyphronSlots
-version: 1.0
-commands:
-  slots:
-    aliases: ["gamble", "slot"]
-    usage: /slots
-    description: Slots game
